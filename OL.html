@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)https://bytes.usc.edu/cs585/f21_d-%2Da-%2Dta/hw/HW3/OL/OL.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>OL</title>
+<script src="./OL_files/OpenLayers.js.download">
+</script>
+<style>
+#map {
+    width:400px;
+    height:400px;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="./OL_files/style.css"></head>
+
+<body data-new-gr-c-s-check-loaded="14.1036.0" data-gr-ext-installed="">
+<div id="map" class="olMap"><div id="OpenLayers_Map_2_OpenLayers_ViewPort" class="olMapViewport olControlDragPanActive olControlZoomBoxActive olControlPinchZoomActive olControlNavigationActive" style="position: relative; overflow: hidden; width: 100%; height: 100%;"><div id="OpenLayers_Map_2_OpenLayers_Container" style="position: absolute; z-index: 749; left: 0px; top: 0px;"><div id="OpenLayers_Layer_OSM_18" dir="ltr" class="olLayerDiv olLayerGrid" style="position: absolute; width: 100%; height: 100%; z-index: 100;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1622.png" style="visibility: inherit; opacity: 1; position: absolute; left: 92px; top: 77px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1622(1).png" style="visibility: inherit; opacity: 1; position: absolute; left: -164px; top: 77px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1621.png" style="visibility: inherit; opacity: 1; position: absolute; left: 92px; top: -179px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1623.png" style="visibility: inherit; opacity: 1; position: absolute; left: 92px; top: 333px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1622(2).png" style="visibility: inherit; opacity: 1; position: absolute; left: 348px; top: 77px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1621(1).png" style="visibility: inherit; opacity: 1; position: absolute; left: -164px; top: -179px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1623(1).png" style="visibility: inherit; opacity: 1; position: absolute; left: -164px; top: 333px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1621(2).png" style="visibility: inherit; opacity: 1; position: absolute; left: 348px; top: -179px; width: 256px; height: 256px;"><img class="olTileImage" crossorigin="anonymous" src="./OL_files/1623(2).png" style="visibility: inherit; opacity: 1; position: absolute; left: 348px; top: 333px; width: 256px; height: 256px;"></div><div id="OpenLayers_Layer_Markers_20" dir="ltr" class="olLayerDiv" style="position: absolute; width: 100%; height: 100%; z-index: 330;"><div id="OL_Icon_22" style="position: absolute; width: 21px; height: 25px; left: 189.5px; top: 159px;"><img id="OL_Icon_22_innerImage" class="olAlphaImg" src="./OL_files/marker.png" style="position: relative; width: 21px; height: 25px;"></div></div></div><div id="OpenLayers_Control_Zoom_5" class="olControlZoom olControlNoSelect" unselectable="on" style="position: absolute; z-index: 1004;"><a href="https://bytes.usc.edu/cs585/f21_d--a--ta/hw/HW3/OL/OL.html#zoomIn" class="olControlZoomIn olButton">+</a><a href="https://bytes.usc.edu/cs585/f21_d--a--ta/hw/HW3/OL/OL.html#zoomOut" class="olControlZoomOut olButton">&#8722;</a></div><div id="OpenLayers_Control_ArgParser_6" class="olControlArgParser olControlNoSelect" unselectable="on" style="position: absolute; z-index: 1004;"></div><div id="OpenLayers_Control_Attribution_7" class="olControlAttribution olControlNoSelect" unselectable="on" style="position: absolute; z-index: 1004;">© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div></div></div>
+
+
+<script>
+// your JS code 
+console.log("Hola, all!");
+alert("Hello JS World!");
+
+// my data is a label/ID for what we store, which is the object stored in variable d, 
+// whose value is {"k1":[{"a":5, "b":-6}]}, which consists of a key called k1 
+// with an array as its value: [{"a":5, "b":-6}]
+var d = {"k1":[{"a":5, "b":-6}]};
+localStorage.setItem("myData",JSON.stringify(d));
+// you'd need to modify the above, to store all your points
+
+
+//next [presumably after closing the browser, and reloading our html]
+// we can fetch the stored data, just by supplying its key:
+var dataStored = JSON.parse(localStorage.getItem("myData"));
+// verify that we fetched our data correctly
+console.log(dataStored); 
+// we can iterate through our array [of points], like so:
+var a = dataStored.k1; // a will contain our array
+for(var indx in a) { // indx is 0,1,2...
+  console.log(a[indx]); // this could be a single point
+}
+
+// here's how to plot points on a map, using OpenLayers:
+// [this is code I mildly modified, from an existing source]
+function initMap() {
+        map = new OpenLayers.Map('map');
+        basemap = new OpenLayers.Layer.OSM("Simple OSM Map");
+        map.addLayer(basemap);
+        markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+}// initMap()
+
+function addMarker(latitude, longitude) {
+        var lonLat = new OpenLayers.LonLat(longitude, latitude)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                map.getProjectionObject() // to Spherical Mercator Projection
+        );
+        var point = new OpenLayers.Marker(lonLat);
+        markers.addMarker(point);
+        map.setCenter(lonLat, 8); // second arg is zoom level
+        //console.log(latitude + ", " + longitude);
+}// addMarker()
+
+
+// load and setup map layers
+initMap();
+
+// here's how to plot just ONE [lat,long] on the map! 
+addMarker(35,-118); // somewhere in SoCal...
+
+</script>
+
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
